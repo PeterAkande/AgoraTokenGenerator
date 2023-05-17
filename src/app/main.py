@@ -30,7 +30,7 @@ def create_token(channel_name: str, role: str, token_type: Union[int, str], user
     if type(token_type) == str:
         # Calculate the token wit user account
         token = RtcTokenBuilder.buildTokenWithAccount(settings.APP_ID, settings.PRIMARY_CERTIFICATE, channel_name,
-                                                      'userAccount', ROLES[role],
+                                                      token_type, ROLES[role],
                                                       expiry)
     elif type(token_type) == int:
         # Calculate the token with the user uid
@@ -40,7 +40,5 @@ def create_token(channel_name: str, role: str, token_type: Union[int, str], user
     else:
         # Very sure Fast Api type checking system would have checked this though
         raise HTTPException(status_code=403, detail='Please specify a valid tokenType')
-
-    print(token)
 
     return TokenResponse(rtcToken=token)
