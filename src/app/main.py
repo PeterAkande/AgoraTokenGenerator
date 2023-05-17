@@ -1,9 +1,10 @@
-from agora_token_builder import RtcTokenBuilder
+# from agora_token_builder import RtcTokenBuilder
 from fastapi import FastAPI, HTTPException
 from typing import Union
 
 from src.app.models import TokenResponse
 from src.app.settings import settings
+from src.token_generator.RtcTokenBuilder2 import RtcTokenBuilder
 
 ROLES = {'publisher': 1, 'subscriber': 2}
 
@@ -29,14 +30,16 @@ def create_token(channel_name: str, role: str, token_type: Union[int, str], user
     # Validate that the correct token type was returned
     if type(token_type) == str:
         # Calculate the token wit user account
-        token = RtcTokenBuilder.buildTokenWithAccount(settings.APP_ID, settings.PRIMARY_CERTIFICATE, channel_name,
-                                                      token_type, ROLES[role],
-                                                      expiry)
+        token = RtcTokenBuilder.build_token_with_user_account(settings.APP_ID, settings.PRIMARY_CERTIFICATE,
+                                                              channel_name,
+                                                              token_type, ROLES[role],
+                                                              expiry)
     elif type(token_type) == int:
         # Calculate the token with the user uid
         # Can be 0, if further verification is not needed
-        token = RtcTokenBuilder.buildTokenWithUid(settings.APP_ID, settings.PRIMARY_CERTIFICATE, channel_name, user_id,
-                                                  ROLES[role], expiry)
+        token = RtcTokenBuilder.build_token_with_uid(settings.APP_ID, settings.PRIMARY_CERTIFICATE, channel_name,
+                                                     user_id,
+                                                     ROLES[role], expiry)
     else:
         # Very sure Fast Api type checking system would have checked this though
         raise HTTPException(status_code=403, detail='Please specify a valid tokenType')
